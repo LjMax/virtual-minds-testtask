@@ -16,7 +16,7 @@ spec:
 ---
 apiVersion: apps/v1
 # What "kind" would you use if adserver Pods need stable domain names inside the cluster?
-kind: ??? # <------------------------------------- !!!
+kind: StatefulSet # <------------------------------------- !!!
 metadata:
   namespace: adition
   name: adserver
@@ -42,18 +42,23 @@ spec:
       containers:
       - name: adserver
         image: my-adserver:v1
+        imagePullPolicy: Never
         ports:
         - containerPort: 80
         env:
           # You have to expose pod and namespace names as env variables to be visible in
           # the adserver container and its cpp code.
         - name: POD_NAME
-          valueFrom: ??? # <---------------------- !!!
+          valueFrom: 
+            fieldRef:
+              fieldPath: metadata.name # <---------------------- !!!
         - name: POD_NAMESPACE
-          valueFrom: ??? # <---------------------- !!!
+          valueFrom: 
+            fieldRef:
+              fieldPath: metadata.namespace # <---------------------- !!!
         volumeMounts:
           # Find our which paths are expected by adserver code in adserver.py.
         - name: geodata
-          mountPath: ??? # <---------------------- !!!
+          mountPath: /mnt/adserver_geodata # <---------------------- !!!
         - name: config
-          mountPath: ??? # <---------------------- !!!
+          mountPath: /mnt/adserver_config # <---------------------- !!!
