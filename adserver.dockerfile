@@ -1,5 +1,8 @@
 FROM ubuntu:20.04 as builder
 
+# Set noninteractive frontend to prevent prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
