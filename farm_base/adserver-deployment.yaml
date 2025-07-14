@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: adition
+  name: ad-svc
+  labels:
+    app: adserver
+spec:
+  clusterIP: None
+  selector:
+    app: adserver
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+apiVersion: apps/v1
+# What "kind" would you use if adserver Pods need stable domain names inside the cluster?
+kind: ??? # <------------------------------------- !!!
+metadata:
+  namespace: adition
+  name: adserver
+spec:
+  serviceName: ad-svc
+  replicas: 3
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app: adserver
+  template:
+    metadata:
+      labels:
+        app: adserver
+    spec:
+      volumes:
+      - name: geodata
+        persistentVolumeClaim:
+          claimName: geodata-pvc
+      - name: config
+        configMap:
+          name: adserver-cfgmap
+      containers:
+      - name: adserver
+        image: my-adserver:v1
+        ports:
+        - containerPort: 80
+        env:
+          # You have to expose pod and namespace names as env variables to be visible in
+          # the adserver container and its cpp code.
+        - name: POD_NAME
+          valueFrom: ??? # <---------------------- !!!
+        - name: POD_NAMESPACE
+          valueFrom: ??? # <---------------------- !!!
+        volumeMounts:
+          # Find our which paths are expected by adserver code in adserver.py.
+        - name: geodata
+          mountPath: ??? # <---------------------- !!!
+        - name: config
+          mountPath: ??? # <---------------------- !!!

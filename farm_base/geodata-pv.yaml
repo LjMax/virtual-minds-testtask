@@ -1,0 +1,34 @@
+# Persistent Volume Claim (PVC) can't be shared by multiple namespaces. Which means each
+# farm needs an own PVC. But multiple PVCs can't bind to the same Persistent Volume
+# (PV). Which in turn forces us to create multiple PVs - one per farm.
+#
+# On the good news - multiple PVs can easily reference the same NFS storage. So it won't
+# result into any duplicates.
+#
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: geodata-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  hostPath:
+    path: /mnt/adserver_geodata
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: adition
+  name: geodata-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: geodata-pv

@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: adition
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: adserver-cfgmap
+  files:
+    - adserver-config.conf
+
+resources:
+  - namespace.yaml
+  - access.yaml
+  - geodata-pv.yaml
+  - adserver-deployment.yaml
+  - daemon-deployment.yaml
+  - database-deployment.yaml
+  - adproxy-deployment.yaml
