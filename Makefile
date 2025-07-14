@@ -16,3 +16,10 @@ images:
 	docker build -t my-adserver:v1 -f adserver.dockerfile .
 	docker build -t my-daemon:v1 -f daemon.dockerfile .
 	docker build -t my-database:v1 -f database.dockerfile .
+
+build-local:
+	mkdir -p build
+	cd build && cmake .. && make -j4
+
+test-local: build-local
+	./build/adserver
